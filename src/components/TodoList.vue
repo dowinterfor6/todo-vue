@@ -136,6 +136,9 @@ export default {
         case ('completed'):
           return this.todos.filter(todo => todo.completed)
       }
+    },
+    showClearCompletedButton () {
+      return this.todos.filter(todo => todo.completed).length > 0
     }
   },
   directives: {
@@ -181,6 +184,9 @@ export default {
     },
     checkAllTodos () {
       this.todos.forEach(todo => { todo.completed = event.target.checked })
+    },
+    clearCompleted () {
+      this.todos = this.todos.filter(todo => !todo.completed)
     }
   }
 }
@@ -271,5 +277,13 @@ export default {
 
   .active {
     background: lightgreen;
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .2s;
+  }
+
+  .fade-enter, .fade-leave-to {
+    opacity: 0;
   }
 </style>
