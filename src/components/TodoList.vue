@@ -62,7 +62,7 @@
         </label>
       </div>
       <div>
-        {{ remaining }} items left
+        {{ itemsRemainingDisplay }}
       </div>
     </div>
 
@@ -135,16 +135,28 @@ export default {
     },
     todosFiltered () {
       switch (this.filter) {
-        case ('all'):
+        case 'all':
           return this.todos
-        case ('active'):
+        case 'active':
           return this.todos.filter(todo => !todo.completed)
-        case ('completed'):
+        case 'completed':
           return this.todos.filter(todo => todo.completed)
       }
     },
     showClearCompletedButton () {
       return this.todos.filter(todo => todo.completed).length > 0
+    },
+    itemsRemainingDisplay () {
+      const incompleteTodos = this.remaining
+
+      switch (incompleteTodos) {
+        case 1:
+          return incompleteTodos + ' item left'
+        case 0:
+          return 'All done!'
+        default:
+          return incompleteTodos + ' items left'
+      }
     }
   },
   directives: {
