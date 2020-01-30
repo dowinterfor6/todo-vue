@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="todo-list-wrapper">
     <input
       type="text"
       class="todo-input"
@@ -7,56 +7,62 @@
       v-model="newTodo"
       @keyup.enter="addTodo"
     >
-    <div
-      v-for="(todo, index) in todosFiltered"
-      :key="todo.id"
-      class="todo-item"
+    <transition-group
+      name="fade"
+      enter-active-class="animated fadeInUp"
+      leave-active-class="animated fadeOutDown"
     >
-      <div class="todo-item-left">
-        <input
-          type="checkbox"
-          v-model="todo.completed"
-        >
-        <div
-          class="todo-item-label"
-          @dblclick="editTodo(todo)"
-          v-if="!todo.editing"
-          :class="{ completed : todo.completed }"
-        >
-          {{ todo.title }}
-        </div>
-        <input
-          class="todo-item-edit"
-          type="text"
-          v-model="todo.title"
-          v-else
-          @blur="doneEdit(todo)"
-          @keyup.enter="doneEdit(todo)"
-          @keyup.esc="cancelEdit(todo)"
-          v-focus
-        >
-      </div>
       <div
-        class="remove-item"
-        @click="removeTodo(index)"
+        v-for="(todo, index) in todosFiltered"
+        :key="todo.id"
+        class="todo-item"
       >
-        &times;
+        <div class="todo-item-left">
+          <input
+            type="checkbox"
+            v-model="todo.completed"
+          >
+          <div
+            class="todo-item-label"
+            @dblclick="editTodo(todo)"
+            v-if="!todo.editing"
+            :class="{ completed : todo.completed }"
+          >
+            {{ todo.title }}
+          </div>
+          <input
+            class="todo-item-edit"
+            type="text"
+            v-model="todo.title"
+            v-else
+            @blur="doneEdit(todo)"
+            @keyup.enter="doneEdit(todo)"
+            @keyup.esc="cancelEdit(todo)"
+            v-focus
+          >
+        </div>
+        <div
+          class="remove-item"
+          @click="removeTodo(index)"
+        >
+          &times;
+        </div>
       </div>
-    </div>
+    </transition-group>
 
     <div class="extra-container">
       <div>
         <label>
           <input
             type="checkbox"
-            :checked="!anyRemaining"
+            :checked="!areAllIncomplete"
             @change="checkAllTodos"
           >
           Check All
         </label>
       </div>
       <div>
-        {{ remaining }} items left
+        {{ incompleteTodosDisplay }}
       </div>
     </div>
 
@@ -69,10 +75,10 @@
           All
         </button>
         <button
-          :class="{ active: filter === 'active' }"
-          @click="filter = 'active'"
+          :class="{ active: filter === 'incomplete' }"
+          @click="filter = 'incomplete'"
         >
-          Active
+          Incomplete
         </button>
         <button
           :class="{ active: filter === 'completed' }"
@@ -121,24 +127,36 @@ export default {
     }
   },
   computed: {
-    remaining () {
+    incompleteTodos () {
       return this.todos.filter(todo => !todo.completed).length
     },
-    anyRemaining () {
-      return this.remaining !== 0
+    areAllIncomplete () {
+      return this.incompleteTodos !== 0
     },
     todosFiltered () {
       switch (this.filter) {
-        case ('all'):
+        case 'all':
           return this.todos
-        case ('active'):
+        case 'incomplete':
           return this.todos.filter(todo => !todo.completed)
-        case ('completed'):
+        case 'completed':
           return this.todos.filter(todo => todo.completed)
       }
     },
     showClearCompletedButton () {
       return this.todos.filter(todo => todo.completed).length > 0
+    },
+    incompleteTodosDisplay () {
+      const incompleteTodos = this.incompleteTodos
+
+      switch (incompleteTodos) {
+        case 1:
+          return incompleteTodos + ' item left'
+        case 0:
+          return 'All done!'
+        default:
+          return incompleteTodos + ' items left'
+      }
     }
   },
   directives: {
@@ -194,6 +212,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
+  @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css");
+
   .todo-input {
     width: 100%;
     padding: 10px 18px;
@@ -210,6 +230,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    animation-duration: 0.3s;
   }
 
   .remove-item {
