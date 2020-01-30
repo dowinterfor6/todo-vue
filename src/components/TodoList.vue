@@ -8,7 +8,7 @@
       @keyup.enter="addTodo"
     >
     <div
-      v-for="(todo, index) in todos"
+      v-for="(todo, index) in todosFiltered"
       :key="todo.id"
       class="todo-item"
     >
@@ -47,12 +47,50 @@
     <div class="extra-container">
       <div>
         <label>
-          <input type="checkbox">
+          <input
+            type="checkbox"
+            :checked="!anyRemaining"
+            @change="checkAllTodos"
+          >
           Check All
         </label>
       </div>
       <div>
         {{ remaining }} items left
+      </div>
+    </div>
+
+    <div class="extra-container">
+      <div>
+        <button
+          :class="{ active: filter === 'all' }"
+          @click="filter = 'all'"
+        >
+          All
+        </button>
+        <button
+          :class="{ active: filter === 'active' }"
+          @click="filter = 'active'"
+        >
+          Active
+        </button>
+        <button
+          :class="{ active: filter === 'completed' }"
+          @click="filter = 'completed'"
+        >
+          Completed
+        </button>
+      </div>
+
+      <div>
+        <transition name="fade">
+          <button
+            v-if="showClearCompletedButton"
+            @click="clearCompleted"
+          >
+            Clear Completed
+          </button>
+        </transition>
       </div>
     </div>
   </div>
@@ -78,12 +116,26 @@ export default {
           'completed': false,
           'editing': false
         }
-      ]
+      ],
+      filter: 'all'
     }
   },
   computed: {
     remaining () {
       return this.todos.filter(todo => !todo.completed).length
+    },
+    anyRemaining () {
+      return this.remaining !== 0
+    },
+    todosFiltered () {
+      switch (this.filter) {
+        case ('all'):
+          return this.todos
+        case ('active'):
+          return this.todos.filter(todo => !todo.completed)
+        case ('completed'):
+          return this.todos.filter(todo => todo.completed)
+      }
     }
   },
   directives: {
@@ -126,6 +178,9 @@ export default {
     cancelEdit (todo) {
       todo.title = this.beforeEditCache
       todo.editing = false
+    },
+    checkAllTodos () {
+      this.todos.forEach(todo => { todo.completed = event.target.checked })
     }
   }
 }
