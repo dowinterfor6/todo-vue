@@ -55,14 +55,14 @@
         <label>
           <input
             type="checkbox"
-            :checked="!anyRemaining"
+            :checked="!areAllIncomplete"
             @change="checkAllTodos"
           >
           Check All
         </label>
       </div>
       <div>
-        {{ itemsRemainingDisplay }}
+        {{ incompleteTodosDisplay }}
       </div>
     </div>
 
@@ -75,10 +75,10 @@
           All
         </button>
         <button
-          :class="{ active: filter === 'active' }"
-          @click="filter = 'active'"
+          :class="{ active: filter === 'incomplete' }"
+          @click="filter = 'incomplete'"
         >
-          Active
+          Incomplete
         </button>
         <button
           :class="{ active: filter === 'completed' }"
@@ -127,17 +127,17 @@ export default {
     }
   },
   computed: {
-    remaining () {
+    incompleteTodos () {
       return this.todos.filter(todo => !todo.completed).length
     },
-    anyRemaining () {
-      return this.remaining !== 0
+    areAllIncomplete () {
+      return this.incompleteTodos !== 0
     },
     todosFiltered () {
       switch (this.filter) {
         case 'all':
           return this.todos
-        case 'active':
+        case 'incomplete':
           return this.todos.filter(todo => !todo.completed)
         case 'completed':
           return this.todos.filter(todo => todo.completed)
@@ -146,8 +146,8 @@ export default {
     showClearCompletedButton () {
       return this.todos.filter(todo => todo.completed).length > 0
     },
-    itemsRemainingDisplay () {
-      const incompleteTodos = this.remaining
+    incompleteTodosDisplay () {
+      const incompleteTodos = this.incompleteTodos
 
       switch (incompleteTodos) {
         case 1:
