@@ -12,12 +12,47 @@
       :key="todo.id"
       class="todo-item"
     >
-      {{ todo.title }}
+      <div class="todo-item-left">
+        <input
+          type="checkbox"
+          v-model="todo.completed"
+        >
+        <div
+          class="todo-item-label"
+          @dblclick="editTodo(todo)"
+          v-if="!todo.editing"
+          :class="{ completed : todo.completed }"
+        >
+          {{ todo.title }}
+        </div>
+        <input
+          class="todo-item-edit"
+          type="text"
+          v-model="todo.title"
+          v-else
+          @blur="doneEdit(todo)"
+          @keyup.enter="doneEdit(todo)"
+          @keyup.esc="cancelEdit(todo)"
+          v-focus
+        >
+      </div>
       <div
         class="remove-item"
         @click="removeTodo(index)"
       >
         &times;
+      </div>
+    </div>
+
+    <div class="extra-container">
+      <div>
+        <label>
+          <input type="checkbox">
+          Check All
+        </label>
+      </div>
+      <div>
+        {{ remaining }} items left
       </div>
     </div>
   </div>
@@ -34,14 +69,28 @@ export default {
         {
           'id': 1,
           'title': 'Finish Vue Screencast',
-          'completed': false
+          'completed': true,
+          'editing': false
         },
         {
           'id': 2,
           'title': 'Take over the world',
-          'completed': false
+          'completed': false,
+          'editing': false
         }
       ]
+    }
+  },
+  computed: {
+    remaining () {
+      return this.todos.filter(todo => !todo.completed).length
+    }
+  },
+  directives: {
+    focus: {
+      inserted: function (el) {
+        el.focus()
+      }
     }
   },
   methods: {
@@ -53,7 +102,8 @@ export default {
       this.todos.push({
         id: this.idForTodo,
         title: this.newTodo,
-        completed: false
+        completed: false,
+        editing: false
       })
 
       this.newTodo = ''
@@ -61,6 +111,21 @@ export default {
     },
     removeTodo (index) {
       this.todos.splice(index, 1)
+    },
+    editTodo (todo) {
+      this.beforeEditCache = todo.title
+      todo.editing = true
+    },
+    doneEdit (todo) {
+      if (todo.title.trim().length === 0) {
+        todo.title = this.beforeEditCache
+      }
+
+      todo.editing = false
+    },
+    cancelEdit (todo) {
+      todo.title = this.beforeEditCache
+      todo.editing = false
     }
   }
 }
@@ -93,5 +158,63 @@ export default {
     &:hover {
       color: black;
     }
+  }
+
+  .todo-item-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .todo-item-label {
+    padding: 10px;
+    border: 1px solid white;
+    margin-left: 12px;
+  }
+
+  .todo-item-edit {
+    font-size: 24px;
+    color: #2c3e50;
+    margin-left: 12px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .completed {
+    text-decoration: line-through;
+    color: grey;
+  }
+
+  .extra-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 10px;
+    border-top: 1px solid lightgrey;
+    padding-top: 14px;
+    margin-bottom: 14px;
+  }
+
+  button {
+    font-size: 14px;
+    background-color: white;
+    appearance: none;
+
+    &:hover {
+      background: lightgreen;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .active {
+    background: lightgreen;
   }
 </style>
