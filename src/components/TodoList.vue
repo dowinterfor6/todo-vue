@@ -18,7 +18,7 @@
 
     <todo-items-remaining
       :areAllComplete="!areAnyIncomplete"
-      :incompleteTodos="incompleteTodos"
+      :incompleteTodosLength="incompleteTodos.length"
     >
     </todo-items-remaining>
 
@@ -84,7 +84,10 @@ export default {
   },
   computed: {
     incompleteTodos () {
-      return this.todos.filter(todo => !todo.completed).length
+      return this.todos.filter(todo => !todo.completed)
+    },
+    completeTodos () {
+      return this.todos.filter(todo => todo.completed)
     },
     areAnyIncomplete () {
       return this.todos.some(todo => !todo.completed)
@@ -97,9 +100,9 @@ export default {
         case 'all':
           return this.todos
         case 'incomplete':
-          return this.todos.filter(todo => !todo.completed)
+          return this.incompleteTodos
         case 'completed':
-          return this.todos.filter(todo => todo.completed)
+          return this.completeTodos
       }
     }
   },
