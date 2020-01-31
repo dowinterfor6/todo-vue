@@ -19,27 +19,15 @@
         :todo="todo"
         :index="index"
         :checkAll="!areAllIncomplete"
-        @removedTodo="removeTodo"
-        @finishedEdit="finishedEdit"
       >
       </todo-item>
     </transition-group>
 
-    <div class="extra-container">
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            :checked="!areAllIncomplete"
-            @change="checkAllTodos"
-          >
-          Check All
-        </label>
-      </div>
-      <div>
-        {{ incompleteTodosDisplay }}
-      </div>
-    </div>
+    <todo-items-remaining
+      :areAllComplete="areAllComplete"
+      :incompleteTodos="incompleteTodos"
+    >
+    </todo-items-remaining>
 
     <div class="extra-container">
       <div>
@@ -66,7 +54,7 @@
       <div>
         <transition name="fade">
           <button
-            v-if="showClearCompletedButton"
+            v-if="areAllComplete"
             @click="clearCompleted"
           >
             Clear Completed
@@ -80,12 +68,15 @@
 <script>
 import Search from './Search'
 import TodoItem from './TodoItem'
+import EventBus from '../eventBus/event-bus'
+import TodoItemsRemaining from './TodoItemsRemaining'
 
 export default {
   name: 'TodoList',
   components: {
     Search,
-    TodoItem
+    TodoItem,
+    TodoItemsRemaining
   },
   data () {
     return {
@@ -108,6 +99,11 @@ export default {
       filter: 'all'
     }
   },
+  created () {
+    EventBus.$on('removedTodo', index => this.removeTodo(index))
+    EventBus.$on('finishedEdit', data => this.finishedEdit(data))
+    EventBus.$on('checkAllTodos', () => this.checkAllTodos())
+  },
   computed: {
     incompleteTodos () {
       return this.todos.filter(todo => !todo.completed).length
@@ -125,20 +121,8 @@ export default {
           return this.todos.filter(todo => todo.completed)
       }
     },
-    showClearCompletedButton () {
-      return this.todos.filter(todo => todo.completed).length > 0
-    },
-    incompleteTodosDisplay () {
-      const incompleteTodos = this.incompleteTodos
-
-      switch (incompleteTodos) {
-        case 1:
-          return incompleteTodos + ' item left'
-        case 0:
-          return 'All done!'
-        default:
-          return incompleteTodos + ' items left'
-      }
+    areAllComplete () {
+      return this.todos.every(todo => todo.completed)
     }
   },
   methods: {
