@@ -66,9 +66,9 @@
 </template>
 
 <script>
+import EventBus from '../eventBus/event-bus'
 import Search from './Search'
 import TodoItem from './TodoItem'
-import EventBus from '../eventBus/event-bus'
 import TodoItemsRemaining from './TodoItemsRemaining'
 
 export default {
