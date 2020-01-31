@@ -4,7 +4,7 @@
       <transition name="fade">
         <button
           v-if="areAnyComplete"
-          @click="clearCompleted"
+          @click="willClearCompleted"
         >
           Clear Completed
         </button>
@@ -14,19 +14,19 @@
     <div>
       <button
         :class="{ active: filter === 'all' }"
-        @click="filter = 'all'"
+        @click="changeFilter('all')"
       >
         All
       </button>
       <button
         :class="{ active: filter === 'incomplete' }"
-        @click="filter = 'incomplete'"
+        @click="changeFilter('incomplete')"
       >
         Incomplete
       </button>
       <button
         :class="{ active: filter === 'completed' }"
-        @click="filter = 'completed'"
+        @click="changeFilter('completed')"
       >
         Completed
       </button>
@@ -35,17 +35,26 @@
 </template>
 
 <script>
+import EventBus from '../eventBus/event-bus'
+
 export default {
   name: 'filter-bar',
   props: {
     areAnyComplete: {
       type: Boolean,
       required: true
+    },
+    filter: {
+      type: String,
+      required: true
     }
   },
   methods: {
-    clearCompleted () {
-      this.todos = this.todos.filter(todo => !todo.completed)
+    willClearCompleted () {
+      EventBus.$emit('clearCompleted')
+    },
+    changeFilter (nextFilterState) {
+      EventBus.$emit('changeFilter', nextFilterState)
     }
   }
 }

@@ -12,6 +12,7 @@
 
     <filter-bar
       :areAnyComplete="areAnyComplete"
+      :filter="filter"
     >
     </filter-bar>
 
@@ -78,6 +79,8 @@ export default {
     EventBus.$on('removedTodo', index => this.removeTodo(index))
     EventBus.$on('finishedEdit', data => this.finishedEdit(data))
     EventBus.$on('checkAllTodos', () => this.checkAllTodos())
+    EventBus.$on('clearCompleted', () => this.clearCompleted())
+    EventBus.$on('changeFilter', nextFilterState => this.changeFilter(nextFilterState))
   },
   computed: {
     incompleteTodos () {
@@ -124,6 +127,12 @@ export default {
     },
     checkAllTodos () {
       this.todos.forEach(todo => { todo.completed = event.target.checked })
+    },
+    clearCompleted () {
+      this.todos = this.todos.filter(todo => !todo.completed)
+    },
+    changeFilter (nextFilterState) {
+      this.filter = nextFilterState
     }
   }
 }
