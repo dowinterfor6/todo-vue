@@ -1,14 +1,8 @@
 <template>
   <div class="todo-list-wrapper">
-    <input
-      type="text"
-      class="todo-input"
-      placeholder="What needs to be done"
-      v-model="newTodo"
-      @keyup.enter="addTodo"
+    <input-fields
     >
-
-    <search></search>
+    </input-fields>
 
     <filter-bar
       :areAnyComplete="areAnyComplete"
@@ -41,23 +35,22 @@
 
 <script>
 import EventBus from '../eventBus/event-bus'
-import Search from './Search'
 import TodoItem from './TodoItem'
 import TodoItemsRemaining from './TodoItemsRemaining'
 import FilterBar from './FilterBar'
+import InputFields from './InputFields'
 
 export default {
   name: 'TodoList',
   components: {
-    Search,
     TodoItem,
     TodoItemsRemaining,
-    FilterBar
+    FilterBar,
+    InputFields
   },
   data () {
     return {
-      newTodo: '',
-      idForTodo: 3,
+      idForNewTodo: 3,
       todos: [
         {
           'id': 1,
@@ -81,6 +74,7 @@ export default {
     EventBus.$on('checkAllTodos', () => this.checkAllTodos())
     EventBus.$on('clearCompleted', () => this.clearCompleted())
     EventBus.$on('changeFilter', nextFilterState => this.changeFilter(nextFilterState))
+    EventBus.$on('addTodo', data => this.addTodo(data))
   },
   computed: {
     incompleteTodos () {
@@ -107,19 +101,18 @@ export default {
     }
   },
   methods: {
-    addTodo () {
-      if (this.newTodo.trim().length === 0) {
+    addTodo (title) {
+      if (title.trim().length === 0) {
         return
       }
 
       this.todos.push({
-        id: this.idForTodo,
-        title: this.newTodo,
+        id: this.idForNewTodo,
+        title,
         completed: false,
         editing: false
       })
 
-      this.newTodo = ''
       this.idForTodo++
     },
     removeTodo (index) {
@@ -140,17 +133,3 @@ export default {
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
-  .todo-input {
-    width: 100%;
-    padding: 10px 18px;
-    font-size: 10px;
-    margin-bottom: 16px;
-
-    &:focus {
-      outline: 0;
-    }
-  }
-</style>
