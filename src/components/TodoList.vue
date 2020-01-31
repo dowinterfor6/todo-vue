@@ -7,14 +7,20 @@
       v-model="newTodo"
       @keyup.enter="addTodo"
     >
+
     <search></search>
 
+    <filter-bar
+      :areAllComplete="!areAnyIncomplete"
+    >
+    </filter-bar>
+
     <todo-items-remaining
-      :areAllComplete="!areAllComplete"
+      :areAllComplete="!areAnyIncomplete"
       :incompleteTodos="incompleteTodos"
     >
     </todo-items-remaining>
-    
+
     <transition-group
       name="fade"
       enter-active-class="animated fadeInUp"
@@ -25,44 +31,10 @@
         :key="todo.id"
         :todo="todo"
         :index="index"
-        :checkAll="!areAllComplete"
+        :checkAll="!areAnyIncomplete"
       >
       </todo-item>
     </transition-group>
-
-    <div class="extra-container">
-      <div>
-        <button
-          :class="{ active: filter === 'all' }"
-          @click="filter = 'all'"
-        >
-          All
-        </button>
-        <button
-          :class="{ active: filter === 'incomplete' }"
-          @click="filter = 'incomplete'"
-        >
-          Incomplete
-        </button>
-        <button
-          :class="{ active: filter === 'completed' }"
-          @click="filter = 'completed'"
-        >
-          Completed
-        </button>
-      </div>
-
-      <div>
-        <transition name="fade">
-          <button
-            v-if="areAnyComplete"
-            @click="clearCompleted"
-          >
-            Clear Completed
-          </button>
-        </transition>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -71,13 +43,15 @@ import EventBus from '../eventBus/event-bus'
 import Search from './Search'
 import TodoItem from './TodoItem'
 import TodoItemsRemaining from './TodoItemsRemaining'
+import FilterBar from './FilterBar'
 
 export default {
   name: 'TodoList',
   components: {
     Search,
     TodoItem,
-    TodoItemsRemaining
+    TodoItemsRemaining,
+    FilterBar
   },
   data () {
     return {
@@ -109,7 +83,7 @@ export default {
     incompleteTodos () {
       return this.todos.filter(todo => !todo.completed).length
     },
-    areAllComplete () {
+    areAnyIncomplete () {
       return this.incompleteTodos !== 0
     },
     areAnyComplete () {
@@ -150,9 +124,6 @@ export default {
     },
     checkAllTodos () {
       this.todos.forEach(todo => { todo.completed = event.target.checked })
-    },
-    clearCompleted () {
-      this.todos = this.todos.filter(todo => !todo.completed)
     }
   }
 }
@@ -187,5 +158,10 @@ export default {
 
   .active {
     background: lightgreen;
+  }
+
+  .filter-container {
+    display: flex;
+    justify-content: space-between;
   }
 </style>

@@ -33,7 +33,7 @@ export default {
   },
   data () {
     return {
-      'willCheckAll': !this.areAllComplete
+      'willCheckAll': this.areAllComplete
     }
   },
   computed: {
