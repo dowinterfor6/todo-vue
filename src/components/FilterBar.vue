@@ -59,3 +59,28 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+  button {
+    font-size: 14px;
+    background-color: white;
+    appearance: none;
+
+    &:hover {
+      background: lightgreen;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .active {
+    background: lightgreen;
+  }
+
+  .filter-container {
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
