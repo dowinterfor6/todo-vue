@@ -7,47 +7,22 @@
       v-model="newTodo"
       @keyup.enter="addTodo"
     >
+    <search></search>
     <transition-group
       name="fade"
       enter-active-class="animated fadeInUp"
       leave-active-class="animated fadeOutDown"
     >
-      <div
+      <todo-item
         v-for="(todo, index) in todosFiltered"
         :key="todo.id"
-        class="todo-item"
+        :todo="todo"
+        :index="index"
+        :checkAll="!areAllIncomplete"
+        @removedTodo="removeTodo"
+        @finishedEdit="finishedEdit"
       >
-        <div class="todo-item-left">
-          <input
-            type="checkbox"
-            v-model="todo.completed"
-          >
-          <div
-            class="todo-item-label"
-            @dblclick="editTodo(todo)"
-            v-if="!todo.editing"
-            :class="{ completed : todo.completed }"
-          >
-            {{ todo.title }}
-          </div>
-          <input
-            class="todo-item-edit"
-            type="text"
-            v-model="todo.title"
-            v-else
-            @blur="doneEdit(todo)"
-            @keyup.enter="doneEdit(todo)"
-            @keyup.esc="cancelEdit(todo)"
-            v-focus
-          >
-        </div>
-        <div
-          class="remove-item"
-          @click="removeTodo(index)"
-        >
-          &times;
-        </div>
-      </div>
+      </todo-item>
     </transition-group>
 
     <div class="extra-container">
@@ -103,8 +78,15 @@
 </template>
 
 <script>
+import Search from './Search'
+import TodoItem from './TodoItem'
+
 export default {
   name: 'TodoList',
+  components: {
+    Search,
+    TodoItem
+  },
   data () {
     return {
       newTodo: '',
@@ -159,13 +141,6 @@ export default {
       }
     }
   },
-  directives: {
-    focus: {
-      inserted: function (el) {
-        el.focus()
-      }
-    }
-  },
   methods: {
     addTodo () {
       if (this.newTodo.trim().length === 0) {
@@ -185,20 +160,8 @@ export default {
     removeTodo (index) {
       this.todos.splice(index, 1)
     },
-    editTodo (todo) {
-      this.beforeEditCache = todo.title
-      todo.editing = true
-    },
-    doneEdit (todo) {
-      if (todo.title.trim().length === 0) {
-        todo.title = this.beforeEditCache
-      }
-
-      todo.editing = false
-    },
-    cancelEdit (todo) {
-      todo.title = this.beforeEditCache
-      todo.editing = false
+    finishedEdit ({ index, todo }) {
+      this.todos.splice(index, 1, todo)
     },
     checkAllTodos () {
       this.todos.forEach(todo => { todo.completed = event.target.checked })
@@ -212,8 +175,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
-  @import url("https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css");
-
   .todo-input {
     width: 100%;
     padding: 10px 18px;
@@ -223,53 +184,6 @@ export default {
     &:focus {
       outline: 0;
     }
-  }
-
-  .todo-item {
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    animation-duration: 0.3s;
-  }
-
-  .remove-item {
-    cursor: pointer;
-    margin-left: 14px;
-
-    &:hover {
-      color: black;
-    }
-  }
-
-  .todo-item-left {
-    display: flex;
-    align-items: center;
-  }
-
-  .todo-item-label {
-    padding: 10px;
-    border: 1px solid white;
-    margin-left: 12px;
-  }
-
-  .todo-item-edit {
-    font-size: 24px;
-    color: #2c3e50;
-    margin-left: 12px;
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-
-    &:focus {
-      outline: none;
-    }
-  }
-
-  .completed {
-    text-decoration: line-through;
-    color: grey;
   }
 
   .extra-container {
@@ -298,13 +212,5 @@ export default {
 
   .active {
     background: lightgreen;
-  }
-
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .2s;
-  }
-
-  .fade-enter, .fade-leave-to {
-    opacity: 0;
   }
 </style>
