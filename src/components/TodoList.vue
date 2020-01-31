@@ -8,6 +8,13 @@
       @keyup.enter="addTodo"
     >
     <search></search>
+
+    <todo-items-remaining
+      :areAllComplete="!areAllComplete"
+      :incompleteTodos="incompleteTodos"
+    >
+    </todo-items-remaining>
+    
     <transition-group
       name="fade"
       enter-active-class="animated fadeInUp"
@@ -18,16 +25,10 @@
         :key="todo.id"
         :todo="todo"
         :index="index"
-        :checkAll="!areAllIncomplete"
+        :checkAll="!areAllComplete"
       >
       </todo-item>
     </transition-group>
-
-    <todo-items-remaining
-      :areAllComplete="areAllComplete"
-      :incompleteTodos="incompleteTodos"
-    >
-    </todo-items-remaining>
 
     <div class="extra-container">
       <div>
@@ -54,7 +55,7 @@
       <div>
         <transition name="fade">
           <button
-            v-if="areAllComplete"
+            v-if="areAnyComplete"
             @click="clearCompleted"
           >
             Clear Completed
@@ -108,8 +109,11 @@ export default {
     incompleteTodos () {
       return this.todos.filter(todo => !todo.completed).length
     },
-    areAllIncomplete () {
+    areAllComplete () {
       return this.incompleteTodos !== 0
+    },
+    areAnyComplete () {
+      return this.todos.some(todo => todo.completed)
     },
     todosFiltered () {
       switch (this.filter) {
@@ -120,9 +124,6 @@ export default {
         case 'completed':
           return this.todos.filter(todo => todo.completed)
       }
-    },
-    areAllComplete () {
-      return this.todos.every(todo => todo.completed)
     }
   },
   methods: {
