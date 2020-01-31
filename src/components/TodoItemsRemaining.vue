@@ -1,10 +1,10 @@
 <template>
-  <div class="extra-container">
+  <div class="check-all-container">
     <div>
       <label>
         <input
           type="checkbox"
-          :checked="!willCheckAll"
+          :checked="areAllComplete"
           @change="willCheckAllTodos"
         >
         Check All
@@ -58,3 +58,16 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+  .check-all-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 10px;
+    border-top: 1px solid lightgrey;
+    border-bottom: 1px solid lightgrey;
+    padding: 14px 0;
+    margin: 14px 0;
+  }
+</style>

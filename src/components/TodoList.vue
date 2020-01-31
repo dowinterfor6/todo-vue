@@ -11,7 +11,7 @@
     <transition-group
       name="fade"
       enter-active-class="animated fadeInUp"
-      leave-active-class="animated fadeOutDown"
+      leave-active-class="animated fadeOutUp"
     >
       <todo-item
         v-for="(todo, index) in todosFiltered"
@@ -168,16 +168,6 @@ export default {
     &:focus {
       outline: 0;
     }
-  }
-
-  .extra-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 10px;
-    border-top: 1px solid lightgrey;
-    padding-top: 14px;
-    margin-bottom: 14px;
   }
 
   button {
