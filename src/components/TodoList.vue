@@ -11,7 +11,7 @@
     <search></search>
 
     <filter-bar
-      :areAllComplete="!areAnyIncomplete"
+      :areAnyComplete="areAnyComplete"
     >
     </filter-bar>
 
@@ -84,7 +84,7 @@ export default {
       return this.todos.filter(todo => !todo.completed).length
     },
     areAnyIncomplete () {
-      return this.incompleteTodos !== 0
+      return this.todos.some(todo => !todo.completed)
     },
     areAnyComplete () {
       return this.todos.some(todo => todo.completed)

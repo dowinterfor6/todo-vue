@@ -38,7 +38,10 @@
 export default {
   name: 'filter-bar',
   props: {
-    
+    areAnyComplete: {
+      type: Boolean,
+      required: true
+    }
   },
   methods: {
     clearCompleted () {
