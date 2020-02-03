@@ -38,7 +38,7 @@ export default {
   },
   computed: {
     incompleteTodosDisplay () {
-      const incompleteTodos = this.incompleteTodos
+      const incompleteTodos = this.incompleteTodosLength
 
       switch (incompleteTodos) {
         case 1:
