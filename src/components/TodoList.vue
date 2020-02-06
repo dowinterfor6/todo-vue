@@ -16,8 +16,11 @@
     >
     </todo-items-remaining>
 
+    <button @click="shuffle">
+      Shuffle
+    </button>
     <transition-group
-      name="fade"
+      name="flip-list"
       enter-active-class="animated fadeInUp"
       leave-active-class="animated fadeOutUp"
     >
@@ -39,6 +42,7 @@ import TodoItem from './TodoItem'
 import TodoItemsRemaining from './TodoItemsRemaining'
 import FilterBar from './FilterBar'
 import InputFields from './InputFields'
+const _ = require('lodash')
 
 export default {
   name: 'TodoList',
@@ -113,7 +117,7 @@ export default {
         editing: false
       })
 
-      this.idForTodo++
+      this.idForNewTodo++
     },
     removeTodo (index) {
       this.todos.splice(index, 1)
@@ -129,7 +133,16 @@ export default {
     },
     changeFilter (nextFilterState) {
       this.filter = nextFilterState
+    },
+    shuffle () {
+      this.todos = _.shuffle(this.todos)
     }
   }
 }
 </script>
+
+<style lang="scss">
+  .flip-list-move {
+    transition: transform 1s;
+  }
+</style>
